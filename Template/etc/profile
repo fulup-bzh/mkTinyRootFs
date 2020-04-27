@@ -1,0 +1,15 @@
+#!/bin/sh
+if test -f /etc/banner; then
+   cat /etc/banner
+fi
+
+TZ="CET-1CEST-2,M3.5.0/02:00:00,M10.5.0/03:00:00"
+export TZ
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+export PATH
+
+PS1='Rim-Linux# '
+export PS1
+
+cd .

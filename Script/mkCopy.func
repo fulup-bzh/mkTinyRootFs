@@ -1,0 +1,102 @@
+# 
+# Object: Functions for MkDiskLess script
+# Author: Fulup Ar Foll
+
+
+# make sure some dynamic lib do not depend on something else
+# -----------------------------------------------------------
+rm -f $SYSROOT.files
+ScanLD () {
+
+  LDLIST=`ldd $1 | awk '{print $1}'`
+  for SLOT in $LDLIST
+  do
+      FOUND=0
+      for DIRECTORIES in /lib /usr/lib /usr/local/lib /usr/X11/lib
+      do
+          # echo seach $DIRECTORIES/$SLOT
+
+          if test -f "$DIRECTORIES/$SLOT"  && test $FOUND -eq 0 
+          then
+             echo     "$DIRECTORIES/$SLOT" >>$SYSROOT/files.lst
+             ScanLD   "$DIRECTORIES/$SLOT"
+             FOUND=1
+          fi
+      done
+  done
+
+}
+
+ScanBIN () {
+ # resolve RPM list into filenames
+ echo Scanning Binary Files and Shared Lib dependancies
+ for BIN in $* ; do
+
+        # find binary in the path
+        PATHFILE=`which $BIN`
+
+        # check we got something
+        if test ! -x $PATHFILE
+        then
+         echo cannot find $BIN
+         exit
+        fi
+
+        # scan for dynamic librairies
+        echo "found $PATHFILE"
+        echo "$PATHFILE" >>$SYSROOT/files.lst
+        ScanLD $PATHFILE
+        
+ done
+}
+
+CopyBIN () {
+  # Now copy all files to destination directoty
+  echo Copy of Binary files and shared dependancy
+  for FILE in `cat $SYSROOT/files.lst`
+  do
+    if ! test -f "${SYSROOT}${FILE}"
+    then
+      mkdir -p `dirname "${SYSROOT}${FILE}"`
+      echo "copy of ${FILE}"
+      cp "$FILE" "${SYSROOT}${FILE}"
+      strip "${SYSROOT}${FILE}"
+    fi
+ done
+ rm $SYSROOT/files.lst
+}
+
+CopyShared () {
+  # Now copy all files to destination directoty
+  echo Copy of shared and config files
+  for FILE in $SHARELIST
+  do
+    if test -d $FILE; then 
+      cp -r $FILE `dirname "${SYSROOT}${FILE}"`
+      else if ! test -f "${SYSROOT}${FILE}"
+      then
+        mkdir -p `dirname "${SYSROOT}${FILE}"`
+        echo "copy of ${FILE}"
+        cp "$FILE" "${SYSROOT}${FILE}"
+      fi
+    fi
+ done
+}
+
+CopyModules () {
+  # Now copy all files to destination directoty
+  echo Copy of Kernel Modules
+  for MODULE in $MODULES
+  do
+    MODPATH=`modprobe -l $MODULE`
+    if ! test -f ${MODPATH}
+    then
+      echo WARNING: cannot find module $MODULE
+    else
+      mkdir -p `dirname "${SYSROOT}${MODPATH}"`
+      echo "copy of ${MODPATH}"
+      cp "$MODPATH" "${SYSROOT}${MODPATH}"
+    fi
+ done
+}
+
