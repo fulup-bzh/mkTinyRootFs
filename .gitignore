@@ -1,0 +1,10 @@
+build*
+package
+nbproject/
+.stfolder
+.cache
+.*.sw*
+*.tar.gz
+__*.pyc
+__*__
+TargetSample-initramfs.gz

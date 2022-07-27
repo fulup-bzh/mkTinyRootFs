@@ -7,7 +7,6 @@ Create a tiny rootfs directly from your standard desktop config
 Author: Fulup Ar Foll (fulup@fridu.bzh)
 Date:   March 2006
 
-
 Object: genere une version RIM directement depuis votre
         distribution, aucune recompilation n'est necessaire.
 

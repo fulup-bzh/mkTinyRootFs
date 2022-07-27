@@ -7,7 +7,7 @@ fi
 
 
 # Module to load (ef_packet is needed for dhcp)
-SF_MODULES="af_packet"
+SF_MODULES=""
 
 # Try to detect hardware modules dynmlicaly
 HW_MODULES=`hwinfo --netcard | grep Driver: | awk '{print $2}'`

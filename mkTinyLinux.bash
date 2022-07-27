@@ -90,8 +90,8 @@ Verbose() {
 }
 
 FatalError() {
-  echo ******************** (hugs !!!!) ****************
-  echo "ERROR:  $1
+  echo "******************** (hugs !!!!) ****************"
+  echo "ERROR:  $1"
   echo "Syntax: $0 config=distrib.conf destdir=/tmp/myDistrib target=openvz [root=no verbose=1]" >&2
   exit 1
 }
@@ -107,12 +107,12 @@ do
  if test "$VALUE" = ""
  then
    FatalError "Missing mandatory parameter"
- endif
+ fi
 done
 
 
 # check we are running as root
-if test "$root" =! "no"
+if test "$root" != "no"
 then
 if test "$UID" != "0"
 then
@@ -146,7 +146,7 @@ done
 
 # Make sure we can write in ${SYSROOT}
 mkdir -p ${SYSROOT}/etc/sysconfig
-if !test -d ${SYSROOT}/etc/sysconfig
+if ! test -d ${SYSROOT}/etc/sysconfig
 then 
   FatalError "Fail to write in ${SYSROOT}"
 fi

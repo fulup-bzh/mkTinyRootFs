@@ -75,7 +75,7 @@ mkdir -p ${SYSROOT}/etc/sysconfig
 
   # Copy Kernel Module
   CopyModules
-  chroot $SYSROOT depmod -a
+  chroot $SYSROOT modprobe -a
 
   # Generate SSH key
   echo Generation of SSH keypair

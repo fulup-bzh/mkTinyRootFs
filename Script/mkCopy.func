@@ -9,6 +9,12 @@ rm -f $SYSROOT.files
 ScanLD () {
 
   LDLIST=`ldd $1 | awk '{print $1}'`
+  if test $? != 0
+  then
+    echo "Fail: ldd $1"
+    exit
+  fi
+
   for SLOT in $LDLIST
   do
       FOUND=0
@@ -36,7 +42,7 @@ ScanBIN () {
         PATHFILE=`which $BIN`
 
         # check we got something
-        if test ! -x $PATHFILE
+        if test ! -x "$PATHFILE"
         then
          echo cannot find $BIN
          exit
@@ -88,15 +94,18 @@ CopyModules () {
   echo Copy of Kernel Modules
   for MODULE in $MODULES
   do
-    MODPATH=`modprobe -l $MODULE`
-    if ! test -f ${MODPATH}
+    MODPATHS=`modprobe --show-depends $MODULE | awk '{print $2}'`
+    if test $? != 0
     then
-      echo WARNING: cannot find module $MODULE
+        echo WARNING: cannot find module $MODULE
     else
-      mkdir -p `dirname "${SYSROOT}${MODPATH}"`
-      echo "copy of ${MODPATH}"
-      cp "$MODPATH" "${SYSROOT}${MODPATH}"
-    fi
+      for MODPATH in $MODPATHS
+      do 
+          mkdir -p `dirname "${SYSROOT}${MODPATH}"`
+          echo "copy of ${MODPATH}"
+          cp "$MODPATH" "${SYSROOT}${MODPATH}"
+      done
+    fi 
  done
 }
 
