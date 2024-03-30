@@ -1,11 +1,2 @@
-127.0.0.1    localhost OpenWrt
-#
-#
-10.10.11.1   follijen.fridu.bzh  follijen
-10.10.11.101 fulup.fridu.bzh     fulup
-#
-10.10.11.50  ldap.fridu.bzh     ldap
-10.10.11.51  printer.fridu.bzh  printer
-10.10.11.52  webcache.fridu.bzh webcache
-10.10.11.53  mail.fridu.bzh     mail
-10.10.11.53  smtp.fridu.bzh     smtp
+127.0.0.1    localhost 
+

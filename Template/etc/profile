@@ -9,7 +9,7 @@ export TZ
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 export PATH
 
-PS1='Rim-Linux# '
+PS1='Tiny-Oci# '
 export PS1
 
 cd .

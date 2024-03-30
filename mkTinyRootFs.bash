@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 # (C) Copyright 2005 by Fulup Ar Foll
-# 
+#
 # This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License version 2 as 
+# it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
 #
 # This program is distributed in the hope that it will be useful,
@@ -33,12 +33,12 @@ DoIt ()
   if test "$dump" != ""
   then
     TAB=`echo $1 | cut -d' ' -f1`
-    if test "$TAB" = "##"  ; then 
+    if test "$TAB" = "##"  ; then
         echo "" >> $dump
     fi
     echo "$*" >> $dump
   fi
-    
+
   # echo DoIt $@
   if test "$dummy" != "1"
   then
@@ -90,9 +90,8 @@ Verbose() {
 }
 
 FatalError() {
-  echo "******************** (hugs !!!!) ****************"
   echo "ERROR:  $1"
-  echo "Syntax: $0 config=distrib.conf destdir=/tmp/myDistrib target=openvz [root=no verbose=1]" >&2
+  echo "Syntax: $0 config=distrib.conf target=/tmp/myDistrib [verbose=1]" >&2
   exit 1
 }
 
@@ -101,7 +100,7 @@ FatalError() {
 EvalArgs "$@"
 
 # Test for Mandatory arguments
-for PARAM in config destdir target
+for PARAM in config target
 do
  eval VALUE=\$${PARAM}
  if test "$VALUE" = ""
@@ -110,29 +109,20 @@ do
  fi
 done
 
-
-# check we are running as root
-if test "$root" != "no"
-then
-if test "$UID" != "0"
-then
- echo ERROR: must unfortunatly be run as ROOT
- exit
-fi
-fi
- 
 # store input params for later usage
-CONFIG=$config
-SYSROOT=$destdir
-TARGET=$target
+CONFIG="$config"
+SYSROOT="$target"
 
 # Read user configuration
 if test -f $CONFIG
 then
-  . $CONFIG
+  source $CONFIG
 else
-  FatalError "$CONFIG.conf not found"
+  FatalError "[$CONFIG] not found"
 fi
+
+# if needed create target dir, wipe if exist
+mkdir -p $SYSROOT && rm -rf $SYSROOT/*
 
 # Source script functions
 for FUNCTIONS in $BASEDIR/*.func $BASEDIR/Script/*.func
@@ -144,22 +134,13 @@ do
 done
 
 
-# Make sure we can write in ${SYSROOT}
-mkdir -p ${SYSROOT}/etc/sysconfig
-if ! test -d ${SYSROOT}/etc/sysconfig
-then 
-  FatalError "Fail to write in ${SYSROOT}"
-fi
-
 # Check Sysroot is not pointing on '/' (hoops)
 ROOT_INODE=`ls -id / | awk '{print $1}'`
 DEST_INAME=`ls -id ${SYSROOT} | awk '{print $1}'`
 if test $ROOT_INODE -eq $DEST_INAME
 then
- FatalError "destdir=$SYSROOT point on system /"
+ FatalError "target=$SYSROOT point on system /"
 fi
-
-exit
 
 # main starting point of script
 
@@ -171,32 +152,12 @@ exit
 
   # scan binaries to find dependancies
   ScanBIN "$BINLIST"
-  CopyBIN 
+  CopyBIN
 
   # copy share, etc, ... files
   CopyShared
-
-  # Copy Kernel Module
-  CopyModules
-  chroot $SYSROOT depmod -a
 
   # Generate SSH key
   echo Generation of SSH keypair
   keygen
 
-  # Create tty Devices
-  mkDevNode
-
-  # Generate a ramdow seed
-  random_seed=$SYSROOT/var/lib/misc/random-seed
-  mkdir -p `dirname $random_seed`
-  dd if=/dev/urandom of=$random_seed count=1 bs=512 2>/dev/null
-
-  # build initramfs
-  echo Build of initramfs
-  (cd $SYSROOT; find . -print | cpio -o -Hnewc) | gzip > ./$CONFIG-initramfs.gz
-
-  # copy to final destination
-  mkdir -p /var/lib/xen/images
-  echo installing initrd in /var/lib/xen/images/$CONFIG-initramfs.gz
-  cp ./$CONFIG-initramfs.gz /var/lib/xen/images/.

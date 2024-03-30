@@ -1,5 +1,5 @@
-# 
-# Object: Functions for MkDiskLess script
+#
+# Object: Functions for MkTinyRootfs script
 # Author: Fulup Ar Foll
 
 
@@ -18,11 +18,10 @@ ScanLD () {
   for SLOT in $LDLIST
   do
       FOUND=0
-      for DIRECTORIES in /lib /usr/lib /usr/local/lib /usr/X11/lib
-      do
+      for DIRECTORIES in /lib* /usr/lib* /usr/local/lib*; do
           # echo seach $DIRECTORIES/$SLOT
 
-          if test -f "$DIRECTORIES/$SLOT"  && test $FOUND -eq 0 
+          if test -f "$DIRECTORIES/$SLOT"  && test $FOUND -eq 0
           then
              echo     "$DIRECTORIES/$SLOT" >>$SYSROOT/files.lst
              ScanLD   "$DIRECTORIES/$SLOT"
@@ -30,35 +29,37 @@ ScanLD () {
           fi
       done
   done
-
 }
 
 ScanBIN () {
  # resolve RPM list into filenames
- echo Scanning Binary Files and Shared Lib dependancies
+ echo Scanning Binary Files and Shared Lib dependencies
  for BIN in $* ; do
+        echo BIN=$BIN
 
-        # find binary in the path
-        PATHFILE=`which $BIN`
-
-        # check we got something
-        if test ! -x "$PATHFILE"
-        then
-         echo cannot find $BIN
-         exit
+        if test -f $BIN; then
+            PATHFILE="$BIN"
+        else
+            PATHFILE=`which $BIN`
+            # check we got something
+            if test ! -x "$PATHFILE"
+            then
+                echo cannot find $BIN
+                exit
+            fi
         fi
 
         # scan for dynamic librairies
         echo "found $PATHFILE"
         echo "$PATHFILE" >>$SYSROOT/files.lst
         ScanLD $PATHFILE
-        
+
  done
 }
 
 CopyBIN () {
-  # Now copy all files to destination directoty
-  echo Copy of Binary files and shared dependancy
+  # Now copy all files to destination directory
+  echo Copy of Binary files and shared dependency
   for FILE in `cat $SYSROOT/files.lst`
   do
     if ! test -f "${SYSROOT}${FILE}"
@@ -73,11 +74,11 @@ CopyBIN () {
 }
 
 CopyShared () {
-  # Now copy all files to destination directoty
+  # Now copy all files to destination directory
   echo Copy of shared and config files
   for FILE in $SHARELIST
   do
-    if test -d $FILE; then 
+    if test -d $FILE; then
       cp -r $FILE `dirname "${SYSROOT}${FILE}"`
       else if ! test -f "${SYSROOT}${FILE}"
       then
@@ -90,7 +91,7 @@ CopyShared () {
 }
 
 CopyModules () {
-  # Now copy all files to destination directoty
+  # Now copy all files to destination directory
   echo Copy of Kernel Modules
   for MODULE in $MODULES
   do
@@ -100,12 +101,12 @@ CopyModules () {
         echo WARNING: cannot find module $MODULE
     else
       for MODPATH in $MODPATHS
-      do 
+      do
           mkdir -p `dirname "${SYSROOT}${MODPATH}"`
           echo "copy of ${MODPATH}"
           cp "$MODPATH" "${SYSROOT}${MODPATH}"
       done
-    fi 
+    fi
  done
 }
 
