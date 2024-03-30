@@ -11,10 +11,14 @@ Usage: From Dockerfile
 -----------------------
 # during stage-1
  - generate config file (cf: TargetSample.conf)
- - RUN  "./myTinyRootFs config=oci-sample.conf target=/tmp/myRootFs"
+ - RUN  "./myTinyRootFs config=Samples/oci-sample.conf target=/tmp/myRootFs"
 # during stage2
- - FROM gcr.io/distroless/static:nonroot AS final
+ - FROM scratch
  - COPY  --from=builder /tmp/myRootFs/* /
 
-
+Sample: building afb-binder
+----------------------------
+  podman build -t tiny-rootfs -f Samples/Dockerfile
+  podman run -p 1234:1234  -it localhost/tiny-rootfs
+  firefox  http://localhost:134/devtools
 
