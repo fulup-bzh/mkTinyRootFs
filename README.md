@@ -1,11 +1,9 @@
 # mkTinyRootFs
-Create a tiny container rootfs
+Create a minimal OCI (Docker/Podman) container rootfs
 
-Author: Fulup Ar Foll (fulup@iod.bzh)
-Date:   March 2024
-
-Object: skim down phase-1 container runtime for minimal phase-2 runtime
-Reference: https://github.com/fulup-bzh/mkTinyRootFs
+* Author: Fulup Ar Foll (fulup@iod.bzh)
+* Date:   March 2024
+* Object: skim down container runtime
 
 Usage: From Dockerfile
 -----------------------
