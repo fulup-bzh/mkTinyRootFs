@@ -8,8 +8,8 @@ Create a minimal OCI (Docker/Podman) container rootfs
 Usage: From Dockerfile
 -----------------------
 # during stage-1
- - generate config file (cf: TargetSample.conf)
- - RUN  "./myTinyRootFs config=Samples/oci-sample.conf target=/tmp/myRootFs"
+ - generate/wget rootfs config (cf: oci-sample.conf)
+ - run./myTinyRootFs config=my-project-config.conf target=/tmp/myRootFs"
 # during stage2
  - FROM scratch
  - COPY  --from=builder /tmp/myRootFs/* /
