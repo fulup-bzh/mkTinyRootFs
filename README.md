@@ -18,7 +18,7 @@ Usage: From Dockerfile
 
 Sample: building afb-binder
 ----------------------------
-  podman build -t tiny-rootfs -f Samples/Dockerfile
-  podman run -p 1234:1234  -it localhost/tiny-rootfs
-  firefox  http://localhost:134/devtools
+  * podman build -t tiny-rootfs -f Samples/Dockerfile
+  * podman run -p 1234:1234  -it localhost/tiny-rootfs
+  * firefox  http://localhost:134/devtools
 
