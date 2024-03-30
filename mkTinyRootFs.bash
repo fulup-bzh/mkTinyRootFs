@@ -158,6 +158,6 @@ fi
   CopyShared
 
   # Generate SSH key
-  echo Generation of SSH keypair
-  keygen
+  # echo Generation of SSH keypair
+  # keygen
 
