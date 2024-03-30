@@ -35,8 +35,6 @@ ScanBIN () {
  # resolve RPM list into filenames
  echo Scanning Binary Files and Shared Lib dependencies
  for BIN in $* ; do
-        echo BIN=$BIN
-
         if test -f $BIN; then
             PATHFILE="$BIN"
         else
